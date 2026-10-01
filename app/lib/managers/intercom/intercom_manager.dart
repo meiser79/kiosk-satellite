@@ -319,8 +319,18 @@ class IntercomManager extends Manager {
   };
   IntercomAudio audio = IntercomAudio();
   MicHub micHub = MicHub.instance;
-  Future<bool> Function() micPermission = () async =>
-      await Permission.microphone.request().isGranted;
+  /// Checks the grant first and only asks when it is missing. Asking
+  /// needs an Activity: on a headless kiosk (no dashboard, no Activity)
+  /// permission_handler throws instead of answering, which left an
+  /// auto-answered call stuck in ringing and the kiosk busy for good.
+  Future<bool> Function() micPermission = () async {
+    try {
+      if (await Permission.microphone.status.isGranted) return true;
+      return await Permission.microphone.request().isGranted;
+    } catch (_) {
+      return false;
+    }
+  };
   Random random = Random.secure();
 
   /// How long one call to another kiosk may take.
@@ -2000,12 +2010,19 @@ class IntercomManager extends Manager {
       return const CommandResult.fail('nothing is ringing');
     }
     _cancelTimers();
-    await audio.stopRing();
-    if (!await _openMic()) {
-      // Answer anyway: listening is still worth it, the card says why
-      // nothing goes out.
-      log.warn(name, '$_micReason, the call is listen only');
+    try {
+      await audio.stopRing();
+      if (!await _openMic()) {
+        // Answer anyway: listening is still worth it, the card says why
+        // nothing goes out.
+        log.warn(name, '$_micReason, the call is listen only');
+      }
+    } catch (e) {
+      // The ring timers are gone already: a throw here would leave the
+      // call ringing forever and every later caller would hear busy.
+      log.warn(name, 'answering hit $e, the call is listen only');
     }
+    if (_call != c) return const CommandResult.fail('the call ended');
     _setState('in_call');
     await _startPlayback();
     _armConnectTimeout();
