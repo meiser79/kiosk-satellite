@@ -129,8 +129,7 @@ class KioskManager extends Manager with WidgetsBindingObserver {
   /// Whether the System UI guard (the accessibility service that closes
   /// the notification shade and recents while protections hold) is enabled
   /// in Android's Accessibility settings.
-  Future<bool> uiGuardEnabled() async =>
-      await _invoke<bool>('hasUiGuard') ?? false;
+  Future<bool> uiGuardEnabled() => _permission('hasUiGuard');
 
   /// Open Android's Accessibility settings, where the guard is enabled.
   Future<void> openUiGuardSettings() => _invoke<void>('openUiGuardSettings');
@@ -652,7 +651,7 @@ class KioskManager extends Manager with WidgetsBindingObserver {
             'Whether the draw-over-apps grant is held. The lockdown shield '
             'and the foreground reclaim both ride on it.',
         handler: (_) async => CommandResult.ok(
-          await _invoke<bool>('hasOverlayPermission') ?? false,
+          await _permission('hasOverlayPermission'),
         ),
       ),
     );
@@ -770,7 +769,7 @@ class KioskManager extends Manager with WidgetsBindingObserver {
       if ((e.key == defs.kioskDisableStatusBar.key ||
               e.key == defs.kioskStartOnBoot.key) &&
           e.value == true) {
-        final has = await _invoke<bool>('hasOverlayPermission') ?? false;
+        final has = await _permission('hasOverlayPermission');
         if (!has) await _invoke<void>('requestOverlayPermission');
       }
       await _apply();
@@ -968,7 +967,7 @@ class KioskManager extends Manager with WidgetsBindingObserver {
     final shieldGranted =
         lockdown &&
         !_settings.get(defs.kioskDisableStatusBar) &&
-        (await _invoke<bool>('hasOverlayPermission') ?? false);
+        (await _permission('hasOverlayPermission'));
     // The pin the owner asked for themselves, consent dialog and all;
     // distinct from the pin lockdown would add on top.
     final kioskHome =
@@ -1037,6 +1036,25 @@ class KioskManager extends Manager with WidgetsBindingObserver {
       'cutout': _settings.get(defs.browserCutoutMode),
       'orientation': _settings.get(defs.screenOrientation),
     });
+  }
+
+  /// A grant check that must also answer without an Activity. The
+  /// kiosk_lock channel lives on MainActivity, which never starts on a
+  /// headless device (DisplayCapability), so its answer is null there and
+  /// the settings page showed "Missing" for grants that are held. Both
+  /// grants are process-wide, so the process-scoped background channel
+  /// answers the same question.
+  Future<bool> _permission(String method) async {
+    final viaActivity = await _invoke<bool>(method);
+    if (viaActivity != null) return viaActivity;
+    try {
+      return await _backgroundChannel.invokeMethod<bool>(method) ?? false;
+    } on PlatformException catch (e) {
+      log.warn(name, '$method failed: ${e.message}');
+    } on MissingPluginException {
+      // Engine not attached yet; the next settings refresh asks again.
+    }
+    return false;
   }
 
   Future<T?> _invoke<T>(String method, [Object? args]) async {

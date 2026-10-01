@@ -384,6 +384,11 @@ class BackgroundBridge(
                     result.success(null)
                 }
                 "canBringToFront" -> result.success(canDrawOverlays())
+                // Grant checks that KioskLock answers too, but KioskLock is
+                // Activity-scoped and absent on headless devices. Both
+                // grants belong to the process, so the answer is the same.
+                "hasOverlayPermission" -> result.success(canDrawOverlays())
+                "hasUiGuard" -> result.success(KioskAccessibilityService.running)
                 // Device restart (issue #528): DevicePolicyManager.reboot is
                 // the one reboot an app can ask for without root, and only
                 // as device owner. The Dart side asks the owner question
