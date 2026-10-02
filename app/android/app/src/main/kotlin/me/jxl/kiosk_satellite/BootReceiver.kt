@@ -33,6 +33,14 @@ class BootReceiver : BroadcastReceiver() {
         if (alarmsOn) KioskSatelliteService.ensureRunning(context)
         if (!prefs.getBoolean("flutter.ks.kiosk.start_on_boot", false)) return
         KioskSatelliteService.ensureRunning(context)
+        // A device with no usable renderer (DisplayCapability) never gets
+        // the dashboard Activity, whatever "Start on boot" says — only
+        // its crash is new there. HomeRole.setAliasEnabled already
+        // refuses to make such a device HOME going forward, but an
+        // existing install that was already set as HOME before this
+        // check existed still has the alias on, so the explicit skip here
+        // stays even once that refusal is in place.
+        if (DisplayCapability.isHeadless(context)) return
         // As the device's home app the system has already launched the
         // kiosk itself, before this broadcast arrives; a second start is
         // harmless but log-noisy (issue #219).

@@ -80,6 +80,15 @@ class MainActivity : FlutterActivity() {
             finish()
             return
         }
+        // Headless board (no ES2-capable EGL config, see DisplayCapability):
+        // the home alias is gone and BootReceiver skips us, but a root
+        // `am start` (uid 0) can still land here. Flutter would abort on
+        // surface creation, so leave before onStart/onResume ever run.
+        if (DisplayCapability.isHeadless(this)) {
+            Log.w("MainActivity", "headless device - refusing to start dashboard")
+            finish()
+            return
+        }
         // Lay the window out edge to edge ourselves. Flutter's immersive mode
         // hides the bars through the legacy systemUiVisibility layout flags,
         // and Lenovo's ZUI ROMs honor the hide but not the layout: the status
@@ -207,10 +216,13 @@ class MainActivity : FlutterActivity() {
     override fun onFlutterUiDisplayed() {
         super.onFlutterUiDisplayed()
         // A frame is on screen, so the renderer works on this GPU: stand
-        // the early-crash net down (issue #127, RendererGuard) and the
-        // home-launcher fuse with it (issue #219, HomeFuse).
+        // the early-crash net down (issue #127, RendererGuard), the
+        // home-launcher fuse with it (issue #219, HomeFuse), and confirm
+        // DisplayCapability's read so a later misread never locks this
+        // device headless.
         RendererGuard.noteFirstFrame(this)
         HomeFuse.noteHealthy(this)
+        DisplayCapability.noteFirstFrame(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

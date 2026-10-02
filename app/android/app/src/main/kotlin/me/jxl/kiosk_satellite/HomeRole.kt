@@ -54,6 +54,17 @@ object HomeRole {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED
 
     fun setAliasEnabled(context: Context, enabled: Boolean) {
+        // A device with no usable EGL/GLES2 renderer (a GPU-less headless
+        // board) must never become HOME: MainActivity's first frame is
+        // exactly what crashes there (DisplayCapability). The dashboard
+        // stays off; KioskSatelliteService and the process-wide engine
+        // carry Intercom, ESPHome and the Home Assistant session on their
+        // own, same as on a phone with the kiosk backgrounded.
+        if (enabled && DisplayCapability.isHeadless(context)) {
+            Log.w(TAG, "refusing to enable home alias: no usable renderer " +
+                "on this device (DisplayCapability.isHeadless)")
+            return
+        }
         if (aliasEnabled(context) == enabled) return
         context.packageManager.setComponentEnabledSetting(
             alias(context),

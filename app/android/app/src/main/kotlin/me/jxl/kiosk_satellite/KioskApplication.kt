@@ -1,6 +1,8 @@
 package me.jxl.kiosk_satellite
 
 import android.app.Application
+import android.content.ComponentName
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.CameraXConfig
@@ -83,6 +85,18 @@ class KioskApplication : Application(), CameraXConfig.Provider {
         // reporters can copy it).
         CrashJournal.install(this)
 
+        // Before HomeRole/BootReceiver can ever enable the home alias: a
+        // device without a usable screen must never become HOME (see
+        // DisplayCapability). The engine and all services still start;
+        // only the dashboard is switched off.
+        DisplayCapability.detect(this)
+        setDashboardEnabled(!DisplayCapability.isHeadless(this))
+
+        // A board without a display sits in "Asleep" forever, and Android
+        // then passes no key presses to apps, accessibility services
+        // included, so the intercom action key never arrives. Keep it awake.
+        if (DisplayCapability.isHeadless(this)) HeadlessWakeLock.acquire(this)
+
         // Before any bridge: they all read volume state through it.
         VolumeController.init(applicationContext)
 
@@ -153,5 +167,25 @@ class KioskApplication : Application(), CameraXConfig.Provider {
         mediaSessions = MediaSessionBridge(applicationContext, messenger)
         voiceIntents = VoiceIntentBridge(applicationContext, messenger)
         plugins = me.jxl.kiosk_satellite.plugins.PluginBridge(applicationContext, messenger)
+    }
+
+    /**
+     * Enables or disables MainActivity (and with it every alias pointing at
+     * it, the HOME alias included). A disabled component cannot be started
+     * by anyone, root included. Re-evaluated on every process start, so a
+     * board that gains a working GPU driver gets its dashboard back.
+     */
+    private fun setDashboardEnabled(enabled: Boolean) {
+        val component = ComponentName(this, MainActivity::class.java)
+        val wanted = if (enabled) {
+            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        }
+        if (packageManager.getComponentEnabledSetting(component) != wanted) {
+            packageManager.setComponentEnabledSetting(
+                component, wanted, PackageManager.DONT_KILL_APP,
+            )
+        }
     }
 }

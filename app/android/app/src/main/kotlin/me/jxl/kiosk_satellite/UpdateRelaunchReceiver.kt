@@ -20,6 +20,9 @@ import android.util.Log
  */
 class UpdateRelaunchReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        // Headless boards have MainActivity disabled (KioskApplication);
+        // an unguarded startActivity would throw ActivityNotFoundException.
+        if (DisplayCapability.isHeadless(context)) return
         if (intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) return
         val launch = HomeRole.launchIntent(context) ?: return
         if (launch.hasCategory(Intent.CATEGORY_HOME)) {
