@@ -23,6 +23,7 @@ import 'managers/wake_word/pryon/pryon_catalog.dart';
 import 'ui/key_nav.dart';
 import 'ui/kiosk_screen.dart';
 import 'ui/resized_image.dart';
+import 'ui/round_screen.dart';
 import 'ui/ui_scale.dart';
 import 'ui/setup_screen.dart';
 import 'ui/theme.dart';
@@ -360,9 +361,17 @@ class _KioskSatelliteAppState extends State<KioskSatelliteApp>
       // when focus reaches a page's first row. The Scale UI factor sits at
       // the same altitude for the same reason: every route, dialog and
       // overlay scales, with the WebViews opting back out (UiScaleExempt).
-      builder: (context, child) => UiScaler(
-        scale: uiScaleFactor(container.settings.get(defs.uiScale)),
-        child: FocusTraversalGroup(policy: KsTraversalPolicy(), child: child!),
+      // A round screen's cut-off corners pad them all (RoundScreenPadding),
+      // outside the scaler, which divides the padding by its factor.
+      builder: (context, child) => RoundScreenPadding(
+        round: container.kiosk.roundScreen,
+        child: UiScaler(
+          scale: uiScaleFactor(container.settings.get(defs.uiScale)),
+          child: FocusTraversalGroup(
+            policy: KsTraversalPolicy(),
+            child: child!,
+          ),
+        ),
       ),
       navigatorObservers: [kioskRouteObserver],
       home: configured

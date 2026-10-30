@@ -16,6 +16,7 @@ import '../core/events.dart';
 import '../managers/settings/definitions.dart' as defs;
 import 'calendar_editor.dart';
 import 'kit.dart';
+import 'round_screen.dart';
 import 'theme.dart';
 import 'weather_readings.dart' show weatherConditionIcon;
 
@@ -668,7 +669,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         // the lists on it fade into the same tone.
         child: Material(
           color: calendarGround(theme),
+          // On a round screen the phone views' lists scroll on to the
+          // bottom of the circle and only rest above it.
           child: SafeArea(
+            bottom:
+                !(RoundScreen.of(context) && layout == CalendarLayout.narrow),
             child: ListenableBuilder(
               listenable: Listenable.merge([
                 cal.calendars,
@@ -2225,6 +2230,7 @@ class _TimelineState extends State<_Timeline> {
       behavior: const ScrollBehavior().copyWith(scrollbars: false),
       child: SingleChildScrollView(
         controller: _scroll,
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
         child: SizedBox(
           height: 24 * hh,
           child: Stack(
@@ -2968,7 +2974,9 @@ class _ScheduleList extends StatelessWidget {
       child: ListView.separated(
         padding: EdgeInsets.only(
           top: 4,
-          bottom: phone && args.onNew != null ? 88 : 24,
+          bottom:
+              (phone && args.onNew != null ? 88 : 24) +
+              MediaQuery.paddingOf(context).bottom,
         ),
         itemCount: groups.length,
         separatorBuilder: (_, _) => SizedBox(height: short ? 14 : 22),
@@ -3216,7 +3224,11 @@ class _PhoneDayList extends StatelessWidget {
     return EdgeFade(
       child: ListView(
         // Room to scroll the last row out from under New event.
-        padding: EdgeInsets.only(bottom: args.onNew == null ? 24 : 88),
+        padding: EdgeInsets.only(
+          bottom:
+              (args.onNew == null ? 24 : 88) +
+              MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           for (final e in events) ...[
             _AgendaRow(args: args, event: e, day: args.anchor, phone: true),

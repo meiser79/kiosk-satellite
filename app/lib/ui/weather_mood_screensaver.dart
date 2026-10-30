@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+
+import 'round_screen.dart';
 import 'weather_mood_renderer.dart';
 import 'weather_mood_information.dart';
 
@@ -420,12 +422,16 @@ class _WeatherMoodScreensaverState extends State<WeatherMoodScreensaver>
         AnimatedOpacity(
           opacity: _revealed ? 1 : 0,
           duration: const Duration(milliseconds: 350),
-          child: WeatherMoodInformation(
-            container: widget.container,
-            readings: _readings,
-            translations: _translations,
-            // Day and dawn overcast: bright cloud from edge to edge.
-            brightSky: scene.condition == 'cloudy' && !scene.night,
+          // The scene fills the screen; on a round screen the clock and the
+          // chips stay inside the circle.
+          child: RoundScreenInset(
+            child: WeatherMoodInformation(
+              container: widget.container,
+              readings: _readings,
+              translations: _translations,
+              // Day and dawn overcast: bright cloud from edge to edge.
+              brightSky: scene.condition == 'cloudy' && !scene.night,
+            ),
           ),
         ),
       ],

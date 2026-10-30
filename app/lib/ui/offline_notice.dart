@@ -6,6 +6,7 @@ import '../app_container.dart';
 import '../core/events.dart';
 import '../l10n/messages.dart';
 import '../managers/settings/definitions.dart' as defs;
+import 'round_screen.dart';
 import 'theme.dart';
 import 'toast.dart';
 
@@ -193,54 +194,60 @@ class _Card extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Material(
       color: colors.surface,
-      child: Center(
-        child: Padding(
-          padding: Ks.pagePadding,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                online ? Icons.cloud_off : Icons.wifi_off,
-                size: 56,
-                color: colors.onSurfaceVariant,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                online
-                    ? l10n(context).offlineDashboard
-                    : l10n(context).offlineNetwork,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: Ks.displayFont,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: colors.onSurface,
+      // On a round screen the notice's longest lines would reach the curve.
+      child: RoundScreenInset(
+        child: Center(
+          child: Padding(
+            padding: Ks.pagePadding,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  online ? Icons.cloud_off : Icons.wifi_off,
+                  size: 56,
+                  color: colors.onSurfaceVariant,
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                online
-                    ? l10n(context).offlinePageHelp
-                    : l10n(context).offlineNetworkHelp,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, color: colors.onSurfaceVariant),
-              ),
-              if (detail.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: 20),
                 Text(
-                  detail,
+                  online
+                      ? l10n(context).offlineDashboard
+                      : l10n(context).offlineNetwork,
                   textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12, color: colors.outline),
+                  style: TextStyle(
+                    fontFamily: Ks.displayFont,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  online
+                      ? l10n(context).offlinePageHelp
+                      : l10n(context).offlineNetworkHelp,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                if (detail.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    detail,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: colors.outline),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                FilledButton.tonal(
+                  onPressed: onRetry,
+                  child: Text(l10n(context).commonRetry),
                 ),
               ],
-              const SizedBox(height: 24),
-              FilledButton.tonal(
-                onPressed: onRetry,
-                child: Text(l10n(context).commonRetry),
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -12,6 +12,7 @@ import '../managers/settings/definitions.dart' as defs;
 import 'celestial_astronomy.dart';
 import 'celestial_controls.dart';
 import 'celestial_renderer.dart';
+import 'round_screen.dart';
 import 'weather_mood_information.dart' show weatherMoodLowPower;
 
 typedef CelestialPlace = ({double latitude, double longitude});
@@ -626,20 +627,24 @@ class _CelestialScreensaverState extends State<CelestialScreensaver>
                   child: const ColoredBox(color: Colors.black),
                 ),
               ),
+              // The sky fills the screen; on a round screen the note and
+              // the controls stay inside the circle.
               Positioned(
                 left: 16,
                 right: 16,
                 top: 24,
-                child: IgnorePointer(
-                  child: AnimatedOpacity(
-                    opacity: _calibrate && _pose != null ? 1 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Center(
-                      child: _Note(
-                        screensaverText(
-                          context,
-                          'Move the device in a figure eight to calibrate '
-                          'the compass.',
+                child: RoundScreenInset(
+                  child: IgnorePointer(
+                    child: AnimatedOpacity(
+                      opacity: _calibrate && _pose != null ? 1 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: Center(
+                        child: _Note(
+                          screensaverText(
+                            context,
+                            'Move the device in a figure eight to calibrate '
+                            'the compass.',
+                          ),
                         ),
                       ),
                     ),
@@ -652,50 +657,52 @@ class _CelestialScreensaverState extends State<CelestialScreensaver>
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IgnorePointer(
-                      child: AnimatedOpacity(
-                        opacity: _hint ? 1 : 0,
-                        duration: const Duration(milliseconds: 250),
-                        child: Text(
-                          screensaverText(context, 'Double tap to close'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Rubik',
-                            fontSize:
-                                13 *
-                                (c.settings.get(
-                                          defs.screensaverCelestialControlScale,
-                                        ) /
-                                        100)
-                                    .clamp(.5, 2),
-                            letterSpacing: .3,
-                            color: const Color(0x99D5DCE6),
-                            shadows: const [Shadow(blurRadius: 6)],
+                child: RoundScreenInset(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IgnorePointer(
+                        child: AnimatedOpacity(
+                          opacity: _hint ? 1 : 0,
+                          duration: const Duration(milliseconds: 250),
+                          child: Text(
+                            screensaverText(context, 'Double tap to close'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Rubik',
+                              fontSize:
+                                  13 *
+                                  (c.settings.get(
+                                            defs.screensaverCelestialControlScale,
+                                          ) /
+                                          100)
+                                      .clamp(.5, 2),
+                              letterSpacing: .3,
+                              color: const Color(0x99D5DCE6),
+                              shadows: const [Shadow(blurRadius: 6)],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    IgnorePointer(
-                      ignoring: !_controls,
-                      child: AnimatedOpacity(
-                        opacity: _controls ? 1 : 0,
-                        duration: const Duration(milliseconds: 250),
-                        child: CelestialControls(
-                          container: c,
-                          latitude: place.latitude,
-                          longitude: place.longitude,
-                          view: _view,
-                          clock: _clock,
-                          compass: _compass && !_noCompass,
-                          visible: _controls,
-                          onClock: () => setState(() {}),
+                      IgnorePointer(
+                        ignoring: !_controls,
+                        child: AnimatedOpacity(
+                          opacity: _controls ? 1 : 0,
+                          duration: const Duration(milliseconds: 250),
+                          child: CelestialControls(
+                            container: c,
+                            latitude: place.latitude,
+                            longitude: place.longitude,
+                            view: _view,
+                            clock: _clock,
+                            compass: _compass && !_noCompass,
+                            visible: _controls,
+                            onClock: () => setState(() {}),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

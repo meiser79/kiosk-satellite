@@ -64,6 +64,11 @@ class KioskManager extends Manager with WidgetsBindingObserver {
   /// every support ask and whenever the Shizuku connection changes.
   final rebootSupported = ValueNotifier<bool>(false);
 
+  /// Whether Android reports the screen as round, such as the Echo Spot's
+  /// on LineageOS; sent with every "ready". RoundScreenPadding keeps the
+  /// app's own chrome inside the square within the circle.
+  final roundScreen = ValueNotifier<bool>(false);
+
   /// The last sanctioned app launch (launcher, gesture, ESPHome). A pause
   /// right after one is the launched app coming up — the launcher's
   /// auto-return owns the way back, not the reclaim.
@@ -720,6 +725,7 @@ class KioskManager extends Manager with WidgetsBindingObserver {
     _channel.setMethodCallHandler((call) async {
       switch (call.method) {
         case 'ready':
+          roundScreen.value = call.arguments == true;
           // A fresh Activity starts unarmed; re-push the flags.
           await _apply();
           if (_navCapture) await _invoke<void>('navCapture', true);

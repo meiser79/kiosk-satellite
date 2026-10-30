@@ -11,6 +11,7 @@ import '../managers/sendspin/music_assistant_api.dart';
 import '../managers/settings/definitions.dart' as defs;
 import '../managers/update/update_manager.dart';
 import 'kit.dart';
+import 'round_screen.dart';
 import 'theme.dart';
 import 'toast.dart';
 
@@ -153,7 +154,10 @@ class KioskDrawer extends StatelessWidget {
             right: BorderSide(color: theme.colorScheme.outlineVariant),
           ),
         ),
+        // On a round screen the pane's right edge lies inside the circle,
+        // so the round margin on the right is not its own.
         child: SafeArea(
+          right: !RoundScreen.of(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

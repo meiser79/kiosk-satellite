@@ -65,6 +65,7 @@ import 'intercom_settings.dart';
 import 'back_nav.dart';
 import 'key_nav.dart';
 import 'kiosk_drawer.dart';
+import 'round_screen.dart';
 import 'sendspin_player_overlay.dart';
 import 'assist/assist_overlay.dart';
 import 'toast.dart';
@@ -196,8 +197,10 @@ class _KioskScreenState extends State<KioskScreen>
   /// The push drawer: the kiosk content slides right in step with the pane,
   /// so the menu reads as sharing the kiosk's plane instead of floating over
   /// it. 0 = closed, 1 = fully open; dragged directly during edge swipes.
-  /// Narrow on purpose — the widest thing in it is "Exit Application".
-  static const _drawerWidth = 300.0;
+  /// Narrow on purpose — the widest thing in it is "Exit Application". A
+  /// round screen gives it the width the circle leaves it instead.
+  double get _drawerWidth => RoundScreen.paneWidth(context, 300);
+
   late final AnimationController _drawer = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 260),

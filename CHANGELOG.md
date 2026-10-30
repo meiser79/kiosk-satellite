@@ -4,6 +4,9 @@ All notable changes to Kiosk Satellite are documented here. Full release notes f
 
 ## Unreleased
 
+### Added
+- **Kiosk Satellite's own screens stay clear of a round screen's edge.** On a screen Android reports as round, such as the Echo Spot on LineageOS, the menu, the settings, the overlays such as Intercom and the music library, the offline notice and the screensaver's corner widgets, At a Glance row, photo details, weather chips and night sky controls now stay inside the circle, so their close buttons and text are no longer cut off. The menu widens to use the circle, and the lists of Intercom, the app launcher, the calendar on a phone, the settings and the music library's options scroll on to the edge of the circle. The dashboard and the screensaver's pictures keep the whole screen, so a dashboard made for the circle stays as it is. Rectangular screens are not affected.
+
 ### Changed
 - **The README mentions video calls.** The Intercom entry now covers voice and video calls.
 

@@ -68,6 +68,7 @@ import 'custom_pages_settings.dart';
 import 'url_filter_settings.dart';
 import 'custom_wake_models.dart';
 import 'kit.dart';
+import 'round_screen.dart';
 import 'time_picker.dart';
 import 'media_picker.dart';
 import 'theme.dart';
@@ -817,7 +818,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: ListView(
         padding: wide
             ? const EdgeInsets.fromLTRB(8, 24, 28, 24)
-            : Ks.pagePadding,
+            : RoundScreen.scrollPadding(context, Ks.pagePadding),
         children: children,
       ),
     );
@@ -1200,7 +1201,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? _resultsPane(context, wide: false)
                   : EdgeFade(
                       child: ListView(
-                        padding: Ks.pagePadding,
+                        padding: RoundScreen.scrollPadding(
+                          context,
+                          Ks.pagePadding,
+                        ),
                         children: [
                           for (final (index, (heading, entries))
                               in _hubGroups.indexed) ...[
@@ -1307,7 +1311,7 @@ class CategorySettingsScreen extends StatelessWidget {
           epoch: 1,
           child: EdgeFade(
             child: ListView(
-              padding: Ks.pagePadding,
+              padding: RoundScreen.scrollPadding(context, Ks.pagePadding),
               children: [
                 _CategoryContent(container: container, category: category),
               ],
@@ -1615,7 +1619,7 @@ class SubpageSettingsScreen extends StatelessWidget {
           epoch: 1,
           child: EdgeFade(
             child: ListView(
-              padding: Ks.pagePadding,
+              padding: RoundScreen.scrollPadding(context, Ks.pagePadding),
               children: [
                 _CategoryContent(
                   container: container,

@@ -12,6 +12,7 @@ import '../managers/intercom/intercom_manager.dart' show IntercomManager;
 import '../managers/settings/definitions.dart' as defs;
 import 'entity_picker.dart';
 import 'kit.dart';
+import 'round_screen.dart';
 import 'settings_search.dart';
 import 'theme.dart';
 import 'toast.dart';
@@ -797,9 +798,14 @@ class _RosterScreenState extends State<_RosterScreen> {
               decoration: BoxDecoration(
                 gradient: ksGroundGradient(scheme.surface, theme.brightness),
               ),
+              // On a round screen the list scrolls on to the top and
+              // bottom of the circle and only rests inside them.
               child: SafeArea(
+                top: !RoundScreen.of(context),
+                bottom: !RoundScreen.of(context),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    final edges = MediaQuery.paddingOf(context);
                     final width = constraints.maxWidth;
                     final compact = width < 600;
                     final stackedHeader =
@@ -890,9 +896,9 @@ class _RosterScreenState extends State<_RosterScreen> {
                           child: SingleChildScrollView(
                             padding: EdgeInsets.fromLTRB(
                               inset,
-                              compact ? 24 : 32,
+                              edges.top + (compact ? 24 : 32),
                               inset,
-                              40,
+                              edges.bottom + 40,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -938,7 +944,7 @@ class _RosterScreenState extends State<_RosterScreen> {
                           ),
                         ),
                         Positioned(
-                          top: 8,
+                          top: edges.top + 8,
                           right: 8,
                           child: IconButton(
                             icon: const Icon(Icons.close),

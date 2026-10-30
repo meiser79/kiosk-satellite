@@ -16,6 +16,7 @@ import 'kit.dart';
 import 'music_library_queue.dart';
 import 'music_library_speakers.dart';
 import 'resized_image.dart';
+import 'round_screen.dart';
 import 'theme.dart';
 import 'thumb_cache.dart' show FetchLane, FetchTicket;
 import 'toast.dart';
@@ -1634,8 +1635,12 @@ class _MusicLibraryScreenState extends State<MusicLibraryScreen> {
           showDragHandle: true,
           builder: (context) => LibraryMenuText(
             container: c,
+            // On a round screen the options scroll on to the bottom of
+            // the circle and only rest above it.
             child: SafeArea(
+              bottom: !RoundScreen.of(context),
               child: SingleChildScrollView(
+                padding: RoundScreen.scrollPadding(context, EdgeInsets.zero),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,

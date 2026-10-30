@@ -319,8 +319,10 @@ class KioskLock(private val activity: Activity, messenger: BinaryMessenger) {
             }
         }
         // The engine outlives Activities; each new Activity announces itself
-        // so Dart re-pushes the flags (a fresh Activity starts unarmed).
-        channel.invokeMethod("ready", null)
+        // so Dart re-pushes the flags (a fresh Activity starts unarmed). It
+        // also says whether the screen is round, which Flutter cannot tell
+        // (RoundScreenPadding).
+        channel.invokeMethod("ready", activity.resources.configuration.isScreenRound)
     }
 
     /** Forwarded from MainActivity.dispatchKeyEvent. True = consumed. */

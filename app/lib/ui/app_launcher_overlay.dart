@@ -9,6 +9,7 @@ import '../l10n/messages.dart';
 import '../managers/launcher/app_launcher_manager.dart';
 import 'kit.dart';
 import 'resized_image.dart';
+import 'round_screen.dart';
 import 'theme.dart';
 import 'toast.dart';
 
@@ -153,7 +154,10 @@ class _LauncherScreenState extends State<_LauncherScreen> {
                   theme.brightness,
                 ),
               ),
+              // On a round screen the wall scrolls on to the bottom of the
+              // circle and only rests above it.
               child: SafeArea(
+                bottom: !RoundScreen.of(context),
                 child: Stack(
                   children: [
                     // Centered both ways while the wall fits, an ordinary
@@ -174,7 +178,8 @@ class _LauncherScreenState extends State<_LauncherScreen> {
                                   48,
                                   compact ? 64 : 96,
                                   48,
-                                  compact ? 20 : 56,
+                                  MediaQuery.paddingOf(context).bottom +
+                                      (compact ? 20 : 56),
                                 ),
                                 child: Wrap(
                                   alignment: WrapAlignment.center,

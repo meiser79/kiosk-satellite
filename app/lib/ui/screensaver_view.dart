@@ -63,6 +63,7 @@ import 'digital_clock_face.dart';
 import 'weather_readings.dart';
 import 'photo_frames.dart';
 import 'plugin_screensaver.dart';
+import 'round_screen.dart';
 import 'celestial_screensaver.dart';
 import 'weather_mood_screensaver.dart';
 
@@ -572,7 +573,8 @@ class _ScreensaverOverlayState extends State<ScreensaverOverlay> {
 }
 
 /// Fades the corner widgets and the At a Glance row out while the running
-/// mode shows its own controls, so the two never stack.
+/// mode shows its own controls, so the two never stack. On a round screen
+/// it also keeps them inside the circle, whose corners are off the screen.
 class _StepAside extends StatelessWidget {
   const _StepAside({required this.container, required this.child});
   final AppContainer container;
@@ -589,7 +591,7 @@ class _StepAside extends StatelessWidget {
         child: child,
       ),
     ),
-    child: child,
+    child: RoundScreenInset(child: child),
   );
 }
 
@@ -6253,17 +6255,20 @@ class _PhotoMetadataState extends State<_PhotoMetadata> {
         ? null
         : widget.corner ?? photoMetadataCorner(settings, widget.mode);
     final caption = photoCaptionOn(settings, widget.mode);
+    // On a round screen the corners and the bottom edge are off the circle.
     if (!caption) {
       return spot == null
           ? const SizedBox.shrink()
-          : _panel(_cornerAlignment(spot));
+          : RoundScreenInset(child: _panel(_cornerAlignment(spot)));
     }
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (spot != null) _panel(_cornerAlignment(spot)),
-        _caption(spot),
-      ],
+    return RoundScreenInset(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (spot != null) _panel(_cornerAlignment(spot)),
+          _caption(spot),
+        ],
+      ),
     );
   }
 

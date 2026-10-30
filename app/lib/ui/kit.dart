@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../l10n/messages.dart';
+import 'round_screen.dart';
 import 'theme.dart';
 import 'toast.dart';
 
@@ -41,11 +42,14 @@ class SettingsCard extends StatelessWidget {
 }
 
 /// Narrow-screen pages read as a column, not a sheet: capped at a comfortable
-/// reading width and centered.
-Widget constrainedColumn(Widget child) => Center(
-  child: ConstrainedBox(
-    constraints: const BoxConstraints(maxWidth: 760),
-    child: child,
+/// reading width and centered. On a round screen the column keeps clear of
+/// the circle's sides ([RoundScreenSides]).
+Widget constrainedColumn(Widget child) => RoundScreenSides(
+  child: Center(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 760),
+      child: child,
+    ),
   ),
 );
 
