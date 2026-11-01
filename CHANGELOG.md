@@ -8,6 +8,7 @@ All notable changes to Kiosk Satellite are documented here. Full release notes f
 - **Kiosk Satellite's own screens stay clear of a round screen's edge.** On a screen Android reports as round, such as the Echo Spot on LineageOS, the menu, the settings, the overlays such as Intercom and the music library, the offline notice and the screensaver's corner widgets, At a Glance row, photo details, weather chips and night sky controls now stay inside the circle, so their close buttons and text are no longer cut off. The menu widens to use the circle, and the lists of Intercom, the app launcher, the calendar on a phone, the settings and the music library's options scroll on to the edge of the circle. The dashboard and the screensaver's pictures keep the whole screen, so a dashboard made for the circle stays as it is. Rectangular screens are not affected.
 
 ### Changed
+- **The Echo Spot sets the microphone for you too.** On the Echo Spot image, which records from the raw microphone as the Echo Dot, Echo Show 5 and Echo Show 8 images do, **Echo cancellation** and **Noise suppression** are not shown in **Microphone settings** and the kiosk adds a 20 dB base gain, the Echo Show 5's, so 0 dB of **Microphone gain** is the right level there.
 - **The README mentions video calls.** The Intercom entry now covers voice and video calls.
 
 ## v2026.11.7 - 2026-11-05

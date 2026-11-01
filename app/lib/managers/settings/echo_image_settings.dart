@@ -25,7 +25,8 @@ import 'settings_manager.dart';
 /// The raw microphone also comes in quieter than Amazon's processing used
 /// to deliver it, so each device has a base gain under Microphone gain
 /// ([micGainBaseDb]): 24 dB on the Echo Show 8 and 20 dB on the Echo Show 5,
-/// the make-up gain of their old paths, and 5 dB on the Echo Dot. The
+/// the make-up gain of their old paths, 5 dB on the Echo Dot and 20 dB on
+/// the Echo Spot, whose old path had the Echo Show 5's gain. The
 /// slider stays the user's and moves from there, so its 0 dB is the
 /// device's right level. A gain set for the old path would add on top, so
 /// the first start with the base gain puts the slider back to 0 dB once
@@ -33,9 +34,10 @@ import 'settings_manager.dart';
 /// canceller, so the echo it cancels stays the same.
 ///
 /// The image is told apart by its updater (SystemUpdateBridge.kt): `biscuit`
-/// is the Echo Dot image and `echo` an Echo Show image. The Shows share one
-/// updater, so the base gain goes by the device's codename: `crown` is the
-/// Echo Show 8 and `cronos` the Echo Show 5.
+/// is the Echo Dot image and `echo` an Echo Show or Echo Spot image. Those
+/// share one updater, so the base gain goes by the device's codename:
+/// `crown` is the Echo Show 8, `cronos` the Echo Show 5 and `rook` the Echo
+/// Spot.
 class EchoImageSettings {
   EchoImageSettings(
     this._settings,
@@ -73,7 +75,12 @@ class EchoImageSettings {
       };
 
   /// The base gain of each Echo by codename.
-  static const baseGainDb = {'crown': 24, 'cronos': 20, 'biscuit': 5};
+  static const baseGainDb = {
+    'crown': 24,
+    'cronos': 20,
+    'biscuit': 5,
+    'rook': 20,
+  };
 
   /// The gain this device adds under Microphone gain
   /// (AudioRoutingManager): 0 anywhere but the Echo images.
